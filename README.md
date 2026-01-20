@@ -1,37 +1,18 @@
-# World-Tribe-Protocol.// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+# 🌍 The World Tribe Protocol (WTP)
+### *A 6-Sided Civilization OS for Universal Equilibrium*
 
-/**
- * @title World Tribe Protocol (WTP)
- * @author The Human Architect
- * @notice Replaces the Scarcity Model with 6-Sided Equilibrium.
- */
-contract WorldTribeProtocol {
-    struct Node {
-        bool isSovereign;    // Side 1: Identity
-        uint256 hearthFlow;  // Side 5: Universal Resources
-        bool inCrisis;       // Red Alert Monitor
-        string activeProject; // Side 3: Contribution
-    }
+"The 1% blockage is over. We have mapped the solution."
 
-    mapping(address => Node) public tribe;
-    uint256 public constant EQUILIBRIUM_LEVEL = 1000;
+## 💠 The Vision
+The World Tribe is a hardware-native operating system designed to move humanity from scarcity into the **Golden State**. 
 
-    // THE GLOBAL HI: Recognizing a new Member
-    function joinTribe() public {
-        require(!tribe[msg.sender].isSovereign, "Already Recognized");
-        tribe[msg.sender] = Node(true, EQUILIBRIUM_LEVEL, false, "Harmony");
-    }
+## 🏮 The 6 Sides of Sovereignty
+1. **Identity:** Sovereign recognition of the self.
+2. **Message:** The "Global Hi"—direct connection to the whole.
+3. **Projects:** Your contribution to the Tribe's beauty and progress.
+4. **The Bridge:** Instant access to community and support.
+5. **Resources:** Automated "Hearth Flow" (Universal Provision).
+6. **Mentorship:** Replacing the penitentiary system with human care.
 
-    // THE MIRROR: Automated Provisioning (Bypassing Banks)
-    function maintainEquilibrium(address _member) public {
-        if (tribe[_member].hearthFlow < EQUILIBRIUM_LEVEL) {
-            tribe[_member].hearthFlow = EQUILIBRIUM_LEVEL;
-        }
-    }
-
-    // THE MENTORSHIP: Replacing Penitentiaries with Help
-    function signalRedAlert() public {
-        tribe[msg.sender].inCrisis = true; // Alerts "Proper People" to help.
-    }
-}
+## 🛠 For Developers
+The technical logic for the **Equilibrium Engine** is located in the `WorldTribe.sol` file in this repository. We are seeking Architects to finalize the hardware integration.
