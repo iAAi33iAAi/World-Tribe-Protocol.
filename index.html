@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Tribe OS - Equilibrium Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #05060a; color: #f5f5f5; font-family: system-ui, sans-serif; overflow: hidden; display: flex; height: 100vh; }
+        #scene-container { flex: 2; position: relative; }
+        #panel { flex: 1; padding: 24px; background: #0b0d14; border-left: 1px solid #1b1f2b; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+        h1 { font-size: 22px; color: #f4d03f; margin-bottom: 4px; }
+        .axis-label { font-size: 12px; text-transform: uppercase; color: #6b7280; letter-spacing: 0.1em; }
+        pre { background: #05060a; padding: 12px; border-radius: 8px; font-size: 13px; color: #a5b4fc; white-space: pre-wrap; }
+        .controls { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+        button { background: #111827; color: #e5e7eb; border: 1px solid #1f2937; padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        button.active { background: #2563eb; border-color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div id="scene-container"></div>
+    <div id="panel">
+        <div class="axis-label" id="axis-text">Protocol Axis</div>
+        <h1 id="face-title">World Tribe OS</h1>
+        <div id="face-content">
+            <h2 style="font-size:16px; color:#9ca3af;">Strategic Summary</h2>
+            <pre id="face-summary">Select a side to view the Protocol Logic.</pre>
+            <h2 style="font-size:16px; color:#9ca3af; margin-top:12px;">Contract Data</h2>
+            <pre id="face-data">Waiting for input...</pre>
+        </div>
+        <div class="controls" id="controls">
+            <button data-face="0" class="active">Identity</button>
+            <button data-face="1">Workstreams</button>
+            <button data-face="2">Resources</button>
+            <button data-face="3">Governance</button>
+        </div>
+    </div>
+
+    <script type="importmap">
+        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        // DATA MODEL Mapped to your Solidity Logic
+        const faces = [
+            { id: 0, axis: 'Sovereignty', title: 'Identity', summary: 'Role-based participation: Member, Builder, and Steward. Verified on the World Tribe Ledger.', data: { members: 1243, builders: 87, stewards: 9 } },
+            { id: 1, axis: 'Contribution', title: 'Workstreams', summary: 'Active projects: Forever Domes, Platform UI, and Governance Modules.', data: { active: 6, completed: 3, blocked: 1 } },
+            { id: 2, axis: 'Equilibrium', title: 'Resources', summary: 'The Hearth Flow: Automated baseline resources. No scarcity, no debt.', data: { treasuryUSD: 48230, domesFund: 39000, opsFund: 9230 } },
+            { id: 3, axis: 'Decisions', title: 'Governance', summary: 'Outcome-based flow: Problem definition, Steward review, and Community validation.', data: { proposals: 4, approved: 18, executed: 15 } }
+        ];
+
+        // Basic Three.js Setup (Simplified version of your photo logic)
+        const container = document.getElementById('scene-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x05060a);
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera.position.set(4, 4, 4);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        // Create the Cube
+        const geometry = new THREE.BoxGeometry(2, 2, 2);
+        const materials = [
+            new THREE.MeshStandardMaterial({ color: 0x2563eb }), // Identity
+            new THREE.MeshStandardMaterial({ color: 0x10b981 }), // Workstreams
+            new THREE.MeshStandardMaterial({ color: 0xf59e0b }), // Resources
+            new THREE.MeshStandardMaterial({ color: 0xef4444 }), // Governance
+            new THREE.MeshStandardMaterial({ color: 0x4b5563 }), // System
+            new THREE.MeshStandardMaterial({ color: 0x111827 })  // Future
+        ];
+        const cube = new THREE.Mesh(geometry, materials);
+        scene.add(cube);
+
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(5, 5, 5);
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x404040));
+
+        // Interaction Logic
+        function updateUI(id) {
+            const data = faces[id];
+            document.getElementById('axis-text').textContent = data.axis;
+            document.getElementById('face-title').textContent = data.title;
+            document.getElementById('face-summary').textContent = data.summary;
+            document.getElementById('face-data').textContent = JSON.stringify(data.data, null, 2);
+            
+            document.querySelectorAll('button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.face == id);
+            });
+        }
+
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.face;
+                updateUI(id);
+                // Rotate cube logic would go here
+                cube.rotation.y += Math.PI / 2; 
+            });
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            cube.rotation.y += 0.005;
+            renderer.render(scene, camera);
+        }
+        animate();
+        updateUI(0);
+    </script>
+</body>
+</html>
