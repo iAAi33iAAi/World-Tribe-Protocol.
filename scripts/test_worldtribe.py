@@ -1,14 +1,18 @@
 import json
+import asyncio
+import sys
 from pathlib import Path
 
 root = Path(__file__).resolve().parent.parent
 build_path = root / 'build' / 'WorldTribe_compiled.json'
+sys.path.insert(0, str(root / 'scripts'))
 
 with open(build_path) as f:
     compiled = json.load(f)
 import pytest
 from web3 import Web3
 from web3.providers.eth_tester import EthereumTesterProvider
+import hardware_sidecar
 
 @pytest.fixture
 def w3():
@@ -110,3 +114,19 @@ def test_non_owner_cannot_set_baseline(w3, contract):
     # Using a more specific error check is better practice
     with pytest.raises(Exception, match="revert"):
         contract.functions.setBaseline(5000).transact({'from': non_owner})
+
+
+def test_run_event_listeners_starts_both_loops(monkeypatch):
+    calls = []
+
+    async def fake_log_loop(event_filter, poll_interval, callback):
+        calls.append((event_filter, poll_interval, callback.__name__))
+
+    monkeypatch.setattr(hardware_sidecar, "log_loop", fake_log_loop)
+
+    asyncio.run(hardware_sidecar.run_event_listeners("crisis", "join", poll_interval=3))
+
+    assert calls == [
+        ("crisis", 3, "handle_crisis"),
+        ("join", 3, "handle_new_member"),
+    ]
