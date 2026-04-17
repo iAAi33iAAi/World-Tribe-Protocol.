@@ -1,0 +1,11 @@
+{
+  "contract_name": "WorldTribe",
+  "source": "WorldTribe.sol",
+  "contract_address": null,
+  "transaction_hash": null,
+  "deployment_block": null,
+  "provider_url": "http://localhost:8545",
+  "ephemeral": false,
+  "generated_at": null,
+  "notes": "Copy of the expected deployment config shape. The deploy script writes config/deployment.json."
+}

@@ -50,17 +50,18 @@ Implemented now:
 Still conceptual or incomplete:
 
 - Hardware integration
-- Real deployment configuration
 - Access control beyond owner/member checks
 - Economic design and anti-abuse protections
 - Production event processing and persistence
 
 ## Quick Start
 
-Install the Python dependencies used by the scripts:
+Create a virtual environment and install the Python dependencies:
 
 ```bash
-pip install py-solc-x web3 eth-tester pytest
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
 Compile the contract:
@@ -69,10 +70,34 @@ Compile the contract:
 python scripts/compile_worldtribe.py
 ```
 
+You can also compile a different source, output path, or Solidity version:
+
+```bash
+python scripts/compile_worldtribe.py --source WorldTribe.sol --output build/WorldTribe_compiled.json --solc-version 0.8.0
+```
+
 Run the tests:
 
 ```bash
 pytest scripts/test_worldtribe.py
+```
+
+Create a deployment config:
+
+```bash
+python scripts/deploy_worldtribe.py
+```
+
+For a reusable local node, point the deploy script at JSON-RPC:
+
+```bash
+python scripts/deploy_worldtribe.py --provider-url http://localhost:8545
+```
+
+Serve the dashboard with live contract state:
+
+```bash
+python scripts/dashboard_server.py
 ```
 
 The sidecar listener is a prototype for reacting to emitted contract events:
@@ -81,14 +106,18 @@ The sidecar listener is a prototype for reacting to emitted contract events:
 python scripts/hardware_sidecar.py
 ```
 
-Note: `hardware_sidecar.py` expects a reachable Ethereum node at `http://localhost:8545` and a real deployed contract address in the script.
+Note: `hardware_sidecar.py` and `dashboard_server.py` both read `config/deployment.json`. An ephemeral deploy created without `--provider-url` is useful for smoke testing the deploy step, but not for cross-process event listening or dashboard reads.
 
 ## Repository Structure
 
 - `WorldTribe.sol`: contract source
-- `scripts/compile_worldtribe.py`: compiles the contract with `solcx`
+- `requirements.txt`: Python dependencies for compile/test tooling
+- `scripts/compile_worldtribe.py`: compiles the contract with `solcx` and supports CLI options
+- `scripts/deploy_worldtribe.py`: deploys the contract and writes shared deployment metadata
+- `scripts/dashboard_server.py`: serves the dashboard and exposes `/api/status` with live contract state
 - `scripts/test_worldtribe.py`: deploys the contract in an in-memory test chain and verifies core behavior
-- `scripts/hardware_sidecar.py`: listens for contract events and demonstrates how off-chain systems could react
+- `scripts/hardware_sidecar.py`: listens for contract events using shared deployment config
+- `config/deployment.example.json`: example shape for deployment metadata consumed by the dashboard and sidecar
 - `build/WorldTribe_compiled.json`: generated ABI and bytecode output
 
 ## Design Notes
@@ -105,9 +134,8 @@ This simplicity is a strength for a prototype, but it also defines the next engi
 
 ## Next Steps
 
-- Add deployment scripts and environment-based configuration
-- Replace placeholder sidecar settings with a real contract address workflow
 - Expand tests for edge cases and failure modes
+- Add write actions so admins and members can interact with the contract from the local app flow
 - Add documentation for deployment, local development, and event consumption
 - Specify the trust model and security assumptions
 
